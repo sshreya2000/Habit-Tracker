@@ -1,0 +1,130 @@
+<div class="container-lpage">
+  <!-- error message notification -->
+    <% if(errorMessage){ %>
+      <div class="alert alert-danger" role="alert">
+          <%= errorMessage %>
+      </div>
+    <% } %>
+    <div class="container main">
+        <div class="green p-2">
+          <h1 class="main-heading">Start with a new Habit Today!</h1>
+          <!-- search bar to create habit -->
+          <div id="habit-input">
+            <form action="/habits/create" method="POST" class="input-form">
+                <input name="habit" type="text" placeholder="Enter your habit here ..." required>
+                <button type="submit" id="form-btn">Add Habit</button>
+            </form>
+          </div>
+          <!-- symbol markings -->
+          <div id="symbol">
+            <i class="fas fa-check-circle" ></i>
+            &ensp;- Done&emsp;&emsp;
+           <i class="fas fa-times-circle"></i>
+           &ensp;- Not Done&emsp;&emsp;
+           <i class="fas fa-minus-circle" ></i>
+           &ensp;- Unmarked&emsp;&emsp;
+           </div>
+           <!-- type of habit button -->
+           <div id="habit-type">
+            <% if(userView=="weekly"){ %>
+           <button class="weekly-view__btn" onclick="showWeeklyData(this)">Daily</button>
+           <button class="select" onclick="showWeeklyData(this)">Weekly</button>
+           <% } else {%>
+            <button class="select" onclick="showWeeklyData(this)">Daily</button>
+           <button class="weekly-view__btn" onclick="showWeeklyData(this)">Weekly</button>
+           <% } %>
+           </div>
+           <!-- function to display habits -->
+           <div class="habits-display">
+            <ul class="habits-list">
+              <li class="with-weekly">
+              <%if(habits.length>0){%>
+              <% for(let habitItem of habits){%>
+              <div class="habits-list-item">
+                  <%let currentDate = new Date();
+                   let dd = currentDate.getDate();
+                   let mm = currentDate.getMonth() + 1;
+                   const yyyy = currentDate.getFullYear();
+                  if (dd < 10) dd = '0' + dd;
+                  if (mm < 10) mm = '0' + mm;
+                  let today = dd + '/' + mm + '/' + yyyy;
+                  let found;
+                  let status;
+                  habitItem.dates.find((item) => {
+                                  if(item.date === today)
+                                  {
+                                      found = true;
+                                      status = item.status;
+                                  }
+                              });
+                   %>
+                      <a href="/habits/status-update?id=<%= habitItem._id %>&date=<%= today %>" class="status">
+                                  <% if(found && status==='yes'){ %>
+                                  <i class="fas fa-check-circle"></i>
+                                  <% } else if(found && status==='no'){ %>
+                                  <i class="fas fa-times-circle"></i>
+                                  <% } else { %>
+                                  <i class="fas fa-minus-circle"></i>
+                                  <% } %>
+                       </a>
+                     <div class="view">
+                      <div class="habit-list-item-name"><%= habitItem.habit %></div>
+                      <% if(userView=="daily"){
+                        let count;
+                        count=habitItem.dates.filter((ite) => {return ite.status =="yes"}).length+"/"+(new Date().getDate()-habitItem.dates.reduce((a, b) => a < b ? a : b).date.substring(0,2)+1);
+                      %>
+                        <div class="daily__container"><%=count%></div>
+                      <%}%>
+                    </div>
+                     <% if(userView=="weekly"){%>
+                <div class="weekly__container" >
+                  <%for(let curentDate of weeklyDate){%>
+                      <div class="weekly__date">
+                       <p><%= curentDate %></p>
+                      <% 
+                       let find;
+                       let stat;
+                       habitItem.dates.find((item) => {
+                          if(item.date === curentDate)
+                          {
+                              find = true;
+                              stat = item.status;
+                            }
+                      });
+                      %>
+                        <a href="/habits/status-update?id=<%= habitItem._id %>&date=<%= curentDate %>" class="status">
+                          <% if(find && stat==='yes'){ %>
+                          <i class="fas fa-check-circle"></i>
+                          <% } else if(find && stat==='no'){ %>
+                          <i class="fas fa-times-circle"></i>
+                          <% } else { %>
+                          <i class="fas fa-minus-circle"></i>
+                          <% } %>
+                        </a>
+                  </div>
+          <%}%> 
+          </div>
+          <%}%>
+                      <div >
+                        <!-- to toggle favourite habit -->
+                          <a href="/habits/favourite-habit/?id=<%= habitItem._id %>" class="favourite">
+                         <% if(habitItem.favourite) { %>
+                                    <i class="fa-solid fa-star"></i>
+                                     <% } else { %>
+                                    <i class="fa-regular fa-star"></i>
+                                <% } %>
+                      </a>
+                      <!-- to remove habit-->
+                      <a href="/habits/remove/?id=<%= habitItem._id %>" class="remove">
+                         <i class="fa-solid fa-trash"></i>
+                     </a>
+                      </div>
+                </div> 
+              <%}%>
+              <%}%>
+              </li>
+            </ul>
+           </div>
+        </div>
+    </div>
+</div>
