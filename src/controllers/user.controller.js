@@ -40,6 +40,5 @@ export default class userController {
       if (err) console.log(err);
       else res.redirect("/landing");
     });
-    res.clearCookie("lastVisit");
   }
 }

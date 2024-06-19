@@ -9,7 +9,7 @@ const UserController = new userController();
 // All the paths to the controller methods.
 router.post("/register", UserController.registerUser);
 router.post("/login", UserController.postLogin);
-router.post("/logout", UserController.logout);
+router.get("/logout", UserController.logout);
 router.post("/changeView/:view", UserController.changeView);
 
 export default router;
